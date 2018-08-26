@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Disk LRU Cache Demo</string>
+    <string name="cache_size">Cache size:</string>
+    <string name="used_space">Used space</string>
+    <string name="free_space">Free space</string>
+    <string name="create_file">Create file</string>
+    <string name="bytes">%d B</string>
+    <string name="kibibytes">%.1f KB</string>
+    <string name="mibibytes">%.1f MB</string>
+    <string name="gigibytes">%.1f GB</string>
 </resources>

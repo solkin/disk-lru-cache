@@ -58,6 +58,18 @@ public class DiskLruCache {
         }
     }
 
+    public long getCacheSize() {
+        return cacheSize;
+    }
+
+    public long getUsedSpace() {
+        return journal.getTotalSize();
+    }
+
+    public long getFreeSpace() {
+        return cacheSize - journal.getTotalSize();
+    }
+
     public static void log(String format, Object... args) {
         if (LOGGING) {
             System.out.println(String.format(format, args));
