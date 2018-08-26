@@ -30,17 +30,20 @@ public class DiskLruCache {
     }
 
     public File put(String key, File file) throws IOException {
-        String name = file.getName();
+        if (!isKeyValid(key)) {
+            throw new IllegalArgumentException(String.format("Key %s is not valid", key));
+        }
         long time = System.currentTimeMillis();
         long fileSize = file.length();
-        Record record = new Record(key, name, time, fileSize);
-        File cacheFile = new File(cacheDir, name);
+        Record record = new Record(key, time, fileSize);
+        File cacheFile = new File(cacheDir, key);
         if ((cacheFile.exists() && cacheFile.delete()) | file.renameTo(cacheFile)) {
             journal.put(record, cacheSize, cacheDir);
             journal.writeJournal();
             return cacheFile;
         } else {
-            throw new IOException(String.format("Unable to move file %s to the cache", name));
+            throw new IOException(String.format("Unable to move file %s to the cache",
+                    file.getName()));
         }
     }
 
@@ -48,7 +51,7 @@ public class DiskLruCache {
         Record record = journal.get(key);
         if (record != null) {
             journal.writeJournal();
-            return new File(cacheDir, record.getName());
+            return new File(cacheDir, record.getKey());
         } else {
             log("[-] No requested file with key %s in cache", key);
             return null;
@@ -59,6 +62,17 @@ public class DiskLruCache {
         if (LOGGING) {
             System.out.println(String.format(format, args));
         }
+    }
+
+    @SuppressWarnings("all")
+    public static boolean isKeyValid(String key) {
+        File file = new File(key);
+        try {
+            file.getCanonicalPath();
+            return true;
+        } catch (IOException ignored) {
+        }
+        return false;
     }
 
 }

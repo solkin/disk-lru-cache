@@ -33,14 +33,14 @@ class Journal {
         map.put(record.getKey(), record);
         totalSize += record.getSize();
         DiskLruCache.log("[+] Put %s (%d bytes) and cache size became %d bytes",
-                record.getName(), record.getSize(), totalSize);
+                record.getKey(), record.getSize(), totalSize);
     }
 
     public Record get(String key) {
         Record record = map.get(key);
         if (record != null) {
             updateTime(record);
-            DiskLruCache.log("[^] Update time of %s (%d bytes)", record.getName(), record.getSize());
+            DiskLruCache.log("[^] Update time of %s (%d bytes)", record.getKey(), record.getSize());
         }
         return record;
     }
@@ -59,8 +59,8 @@ class Journal {
                 Record record = records.remove(c);
                 long nextTotalSize = totalSize - record.getSize();
                 DiskLruCache.log("[x] Delete %s [%d ms] %d bytes and free cache to %d bytes",
-                        record.getName(), record.getTime(), record.getSize(), nextTotalSize);
-                File file = new File(cacheDir, record.getName());
+                        record.getKey(), record.getTime(), record.getSize(), nextTotalSize);
+                File file = new File(cacheDir, record.getKey());
                 if (file.exists()) {
                     if (!file.delete()) {
                         throw new IOException(String.format("Unable to delete file %s from cache",
@@ -93,7 +93,6 @@ class Journal {
             stream.writeInt(map.size());
             for (Record record : map.values()) {
                 stream.writeUTF(record.getKey());
-                stream.writeUTF(record.getName());
                 stream.writeLong(record.getTime());
                 stream.writeLong(record.getSize());
             }
@@ -121,11 +120,10 @@ class Journal {
             long totalSize = 0;
             for (int c = 0; c < count; c++) {
                 String key = stream.readUTF();
-                String name = stream.readUTF();
                 long time = stream.readLong();
                 long size = stream.readLong();
                 totalSize += size;
-                Record record = new Record(key, name, time, size);
+                Record record = new Record(key, time, size);
                 journal.put(record);
             }
             journal.setTotalSize(totalSize);
