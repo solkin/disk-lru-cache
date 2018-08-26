@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView usedSpaceView;
     private TextView freeSpaceView;
     private ProgressBar cacheUsageView;
-    private View createFileButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         usedSpaceView = findViewById(R.id.used_space);
         freeSpaceView = findViewById(R.id.free_space);
         cacheUsageView = findViewById(R.id.cache_usage);
-        createFileButton = findViewById(R.id.create_file_button);
+        View createFileButton = findViewById(R.id.create_file_button);
         createFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,9 +84,9 @@ public class MainActivity extends AppCompatActivity {
             wordLength += r.nextInt(delta);
         }
         StringBuilder sb = new StringBuilder(wordLength);
-        for (int i = 0; i < wordLength; i++) { // For each letter in the word
-            char tmp = (char) ('a' + r.nextInt('z' - 'a')); // Generate a letter between a and z
-            sb.append(tmp); // Add it to the String
+        for (int i = 0; i < wordLength; i++) {
+            char tmp = (char) ('a' + r.nextInt('z' - 'a'));
+            sb.append(tmp);
         }
         return sb.toString();
     }
