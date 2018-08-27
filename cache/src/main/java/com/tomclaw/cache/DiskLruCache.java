@@ -65,6 +65,16 @@ public class DiskLruCache {
         }
     }
 
+    public boolean delete(String key) {
+        Record record = journal.delete(key);
+        if (record != null) {
+            journal.writeJournal();
+            File file = new File(cacheDir, record.getName());
+            return file.delete();
+        }
+        return false;
+    }
+
     public long getCacheSize() {
         return cacheSize;
     }
