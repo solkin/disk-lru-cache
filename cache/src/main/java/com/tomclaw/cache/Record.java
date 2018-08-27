@@ -33,4 +33,26 @@ class Record {
     public long getSize() {
         return size;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Record record = (Record) o;
+
+        if (time != record.time) return false;
+        if (size != record.size) return false;
+        if (!key.equals(record.key)) return false;
+        return name.equals(record.name);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = key.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + (int) (time ^ (time >>> 32));
+        result = 31 * result + (int) (size ^ (size >>> 32));
+        return result;
+    }
 }

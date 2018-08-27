@@ -40,6 +40,7 @@ public class DiskLruCache {
         Record record = new Record(key, name, time, fileSize);
         File cacheFile = new File(cacheDir, name);
         if ((cacheFile.exists() && cacheFile.delete()) | file.renameTo(cacheFile)) {
+            journal.delete(key);
             journal.put(record, cacheSize, cacheDir);
             journal.writeJournal();
             return cacheFile;

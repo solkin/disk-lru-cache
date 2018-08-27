@@ -46,7 +46,11 @@ class Journal {
     }
 
     public Record delete(String key) {
-        return map.remove(key);
+        Record record = map.remove(key);
+        if (record != null) {
+            totalSize -= record.getSize();
+        }
+        return record;
     }
 
     private void updateTime(Record record) {
@@ -64,12 +68,10 @@ class Journal {
                 long nextTotalSize = totalSize - record.getSize();
                 DiskLruCache.log("[x] Delete %s [%d ms] %d bytes and free cache to %d bytes",
                         record.getKey(), record.getTime(), record.getSize(), nextTotalSize);
-                File file = new File(cacheDir, record.getKey());
-                if (file.exists()) {
-                    if (!file.delete()) {
-                        throw new IOException(String.format("Unable to delete file %s from cache",
-                                file.getName()));
-                    }
+                File file = new File(cacheDir, record.getName());
+                if (file.exists() && !file.delete()) {
+                    throw new IOException(String.format("Unable to delete file %s from cache",
+                            file.getName()));
                 }
                 map.remove(record.getKey());
                 totalSize = nextTotalSize;
