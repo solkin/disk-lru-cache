@@ -52,8 +52,13 @@ public class DiskLruCache {
     public File get(String key) {
         Record record = journal.get(key);
         if (record != null) {
+            File file = new File(cacheDir, record.getName());
+            if (!file.exists()) {
+                journal.delete(key);
+                file = null;
+            }
             journal.writeJournal();
-            return new File(cacheDir, record.getName());
+            return file;
         } else {
             log("[-] No requested file with key %s in cache", key);
             return null;

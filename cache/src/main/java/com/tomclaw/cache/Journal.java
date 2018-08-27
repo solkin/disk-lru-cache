@@ -45,6 +45,10 @@ class Journal {
         return record;
     }
 
+    public Record delete(String key) {
+        return map.remove(key);
+    }
+
     private void updateTime(Record record) {
         long time = System.currentTimeMillis();
         map.put(record.getKey(), new Record(record, time));
