@@ -93,6 +93,7 @@ class Journal {
             stream.writeInt(map.size());
             for (Record record : map.values()) {
                 stream.writeUTF(record.getKey());
+                stream.writeUTF(record.getName());
                 stream.writeLong(record.getTime());
                 stream.writeLong(record.getSize());
             }
@@ -120,10 +121,11 @@ class Journal {
             long totalSize = 0;
             for (int c = 0; c < count; c++) {
                 String key = stream.readUTF();
+                String name = stream.readUTF();
                 long time = stream.readLong();
                 long size = stream.readLong();
                 totalSize += size;
-                Record record = new Record(key, time, size);
+                Record record = new Record(key, name, time, size);
                 journal.put(record);
             }
             journal.setTotalSize(totalSize);

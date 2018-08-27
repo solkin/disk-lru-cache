@@ -1,6 +1,10 @@
 package com.tomclaw.cache;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 @SuppressWarnings("unused")
 public class DiskLruCache {
@@ -30,13 +34,11 @@ public class DiskLruCache {
     }
 
     public File put(String key, File file) throws IOException {
-        if (!isKeyValid(key)) {
-            throw new IllegalArgumentException(String.format("Key %s is not valid", key));
-        }
+        String name = sha256Hex(key);
         long time = System.currentTimeMillis();
         long fileSize = file.length();
-        Record record = new Record(key, time, fileSize);
-        File cacheFile = new File(cacheDir, key);
+        Record record = new Record(key, name, time, fileSize);
+        File cacheFile = new File(cacheDir, name);
         if ((cacheFile.exists() && cacheFile.delete()) | file.renameTo(cacheFile)) {
             journal.put(record, cacheSize, cacheDir);
             journal.writeJournal();
@@ -51,7 +53,7 @@ public class DiskLruCache {
         Record record = journal.get(key);
         if (record != null) {
             journal.writeJournal();
-            return new File(cacheDir, record.getKey());
+            return new File(cacheDir, record.getName());
         } else {
             log("[-] No requested file with key %s in cache", key);
             return null;
@@ -70,21 +72,29 @@ public class DiskLruCache {
         return cacheSize - journal.getTotalSize();
     }
 
+    public static String sha256Hex(String base) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            byte[] bytes = digest.digest(base.getBytes("UTF-8"));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : bytes) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException ignored) {
+        } catch (UnsupportedEncodingException ignored) {
+        }
+        throw new IllegalArgumentException("Unable to hash key");
+    }
+
     public static void log(String format, Object... args) {
         if (LOGGING) {
             System.out.println(String.format(format, args));
         }
-    }
-
-    @SuppressWarnings("all")
-    public static boolean isKeyValid(String key) {
-        File file = new File(key);
-        try {
-            file.getCanonicalPath();
-            return true;
-        } catch (IOException ignored) {
-        }
-        return false;
     }
 
 }
