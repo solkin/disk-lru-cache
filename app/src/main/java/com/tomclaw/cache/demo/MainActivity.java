@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView cacheSizeView;
     private TextView usedSpaceView;
     private TextView freeSpaceView;
+    private TextView journalSizeView;
+    private TextView filesCountView;
     private ProgressBar cacheUsageView;
 
     @Override
@@ -37,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
         usedSpaceView = findViewById(R.id.used_space);
         freeSpaceView = findViewById(R.id.free_space);
         cacheUsageView = findViewById(R.id.cache_usage);
+        journalSizeView = findViewById(R.id.journal_size);
+        filesCountView = findViewById(R.id.files_count);
         View createFileButton = findViewById(R.id.create_file_button);
         createFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
         cacheSizeView.setText(formatBytes(cache.getCacheSize()));
         usedSpaceView.setText(formatBytes(cache.getUsedSpace()));
         freeSpaceView.setText(formatBytes(cache.getFreeSpace()));
+        journalSizeView.setText(formatBytes(cache.getJournalSize()));
+        filesCountView.setText(String.valueOf(cache.keySet().size()));
         cacheUsageView.setProgress((int) (100 * cache.getUsedSpace() / cache.getCacheSize()));
     }
 

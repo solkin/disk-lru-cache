@@ -76,6 +76,52 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="4dp"
+            android:paddingRight="4dp"
+            android:text="@string/journal_size"
+            android:textStyle="bold"
+            tools:ignore="RtlSymmetry" />
+
+        <TextView
+            android:id="@+id/journal_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="75 Kb" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="4dp"
+            android:paddingRight="4dp"
+            android:text="@string/files_count"
+            android:textStyle="bold"
+            tools:ignore="RtlSymmetry" />
+
+        <TextView
+            android:id="@+id/files_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="75 Kb" />
+
+    </LinearLayout>
+
     <android.support.v4.widget.ContentLoadingProgressBar
         android:id="@+id/cache_usage"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"

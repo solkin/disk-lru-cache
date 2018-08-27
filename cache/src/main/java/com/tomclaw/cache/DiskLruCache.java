@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 public class DiskLruCache {
@@ -76,6 +77,10 @@ public class DiskLruCache {
         return false;
     }
 
+    public Set<String> keySet() {
+        return journal.keySet();
+    }
+
     public long getCacheSize() {
         return cacheSize;
     }
@@ -86,6 +91,10 @@ public class DiskLruCache {
 
     public long getFreeSpace() {
         return cacheSize - journal.getTotalSize();
+    }
+
+    public long getJournalSize() {
+        return journal.getJournalSize();
     }
 
     public static String sha256Hex(String base) {

@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class App extends Application {
 
-    private static final long CACHE_SIZE = 100 * 1024;
+    private static final long CACHE_SIZE = 500 * 1024;
 
     private static DiskLruCache cache;
 

@@ -7,10 +7,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 class Journal {
@@ -53,6 +55,10 @@ class Journal {
         return record;
     }
 
+    public Set<String> keySet() {
+        return Collections.unmodifiableSet(map.keySet());
+    }
+
     private void updateTime(Record record) {
         long time = System.currentTimeMillis();
         map.put(record.getKey(), new Record(record, time));
@@ -85,6 +91,10 @@ class Journal {
 
     public long getTotalSize() {
         return totalSize;
+    }
+
+    public long getJournalSize() {
+        return file.length();
     }
 
     private void setTotalSize(long totalSize) {
