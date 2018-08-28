@@ -35,12 +35,14 @@ public class DiskLruCache {
     }
 
     public File put(String key, File file) throws IOException {
-        String name = sha256Hex(key);
+        String name = keyHash(key);
         long time = System.currentTimeMillis();
         long fileSize = file.length();
         Record record = new Record(key, name, time, fileSize);
         File cacheFile = new File(cacheDir, name);
-        if ((cacheFile.exists() && cacheFile.delete()) | file.renameTo(cacheFile)) {
+        if ((cacheDir.exists() || cacheDir.mkdirs())
+                | (cacheFile.exists() && cacheFile.delete())
+                | file.renameTo(cacheFile)) {
             journal.delete(key);
             journal.put(record, cacheSize, cacheDir);
             journal.writeJournal();
@@ -97,7 +99,7 @@ public class DiskLruCache {
         return journal.getJournalSize();
     }
 
-    public static String sha256Hex(String base) {
+    public static String keyHash(String base) {
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");
             byte[] bytes = digest.digest(base.getBytes("UTF-8"));
