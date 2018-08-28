@@ -35,6 +35,7 @@ public class DiskLruCache {
     }
 
     public File put(String key, File file) throws IOException {
+        assertKeyValid(key);
         String name = keyHash(key);
         long time = System.currentTimeMillis();
         long fileSize = file.length();
@@ -54,6 +55,7 @@ public class DiskLruCache {
     }
 
     public File get(String key) {
+        assertKeyValid(key);
         Record record = journal.get(key);
         if (record != null) {
             File file = new File(cacheDir, record.getName());
@@ -70,6 +72,7 @@ public class DiskLruCache {
     }
 
     public boolean delete(String key) {
+        assertKeyValid(key);
         Record record = journal.delete(key);
         if (record != null) {
             journal.writeJournal();
@@ -77,6 +80,12 @@ public class DiskLruCache {
             return file.delete();
         }
         return false;
+    }
+
+    private void assertKeyValid(String key) {
+        if (key == null || key.length() == 0) {
+            throw new IllegalArgumentException(String.format("Invalid key value: '%s'", key));
+        }
     }
 
     public Set<String> keySet() {
