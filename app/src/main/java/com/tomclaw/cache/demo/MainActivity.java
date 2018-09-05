@@ -42,10 +42,17 @@ public class MainActivity extends AppCompatActivity {
         journalSizeView = findViewById(R.id.journal_size);
         filesCountView = findViewById(R.id.files_count);
         View createFileButton = findViewById(R.id.create_file_button);
+        View clearCacheButton = findViewById(R.id.clear_cache_button);
         createFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TaskExecutor.getInstance().execute(new CreateFileTask(MainActivity.this));
+            }
+        });
+        clearCacheButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TaskExecutor.getInstance().execute(new ClearCacheTask(MainActivity.this));
             }
         });
 
@@ -123,6 +130,29 @@ public class MainActivity extends AppCompatActivity {
                 }
                 String key = generateRandomString();
                 cache().put(key, file);
+            }
+        }
+
+        @Override
+        public void onSuccessMain() {
+            MainActivity activity = getWeakObject();
+            if (activity != null) {
+                activity.bindViews();
+            }
+        }
+    }
+
+    private static class ClearCacheTask extends WeakObjectTask<MainActivity> {
+
+        public ClearCacheTask(MainActivity activity) {
+            super(activity);
+        }
+
+        @Override
+        public void executeBackground() {
+            Context context = getWeakObject();
+            if (context != null) {
+                cache().clearCache();
             }
         }
 

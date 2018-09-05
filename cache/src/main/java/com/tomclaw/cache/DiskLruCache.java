@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -72,14 +73,28 @@ public class DiskLruCache {
     }
 
     public boolean delete(String key) {
+        return delete(key, true);
+    }
+
+    private boolean delete(String key, boolean writeJournal) {
         assertKeyValid(key);
         Record record = journal.delete(key);
         if (record != null) {
-            journal.writeJournal();
+            if (writeJournal) {
+                journal.writeJournal();
+            }
             File file = new File(cacheDir, record.getName());
             return file.delete();
         }
         return false;
+    }
+
+    public void clearCache() {
+        Set<String> keys = new HashSet<>(journal.keySet());
+        for (String key : keys) {
+            delete(key, false);
+        }
+        journal.writeJournal();
     }
 
     private void assertKeyValid(String key) {

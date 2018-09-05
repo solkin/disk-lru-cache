@@ -10,4 +10,5 @@
     <string name="gigibytes">%.1f GB</string>
     <string name="journal_size">Journal size</string>
     <string name="files_count">Files count</string>
+    <string name="clear_cache">Clear cache</string>
 </resources>
