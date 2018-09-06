@@ -36,39 +36,43 @@ public class DiskLruCache {
     }
 
     public File put(String key, File file) throws IOException {
-        assertKeyValid(key);
-        String name = keyHash(key);
-        long time = System.currentTimeMillis();
-        long fileSize = file.length();
-        Record record = new Record(key, name, time, fileSize);
-        File cacheFile = new File(cacheDir, name);
-        if ((cacheDir.exists() || cacheDir.mkdirs())
-                | (cacheFile.exists() && cacheFile.delete())
-                | file.renameTo(cacheFile)) {
-            journal.delete(key);
-            journal.put(record, cacheSize, cacheDir);
-            journal.writeJournal();
-            return cacheFile;
-        } else {
-            throw new IOException(String.format("Unable to move file %s to the cache",
-                    file.getName()));
+        synchronized (journal) {
+            assertKeyValid(key);
+            String name = keyHash(key);
+            long time = System.currentTimeMillis();
+            long fileSize = file.length();
+            Record record = new Record(key, name, time, fileSize);
+            File cacheFile = new File(cacheDir, name);
+            if ((cacheDir.exists() || cacheDir.mkdirs())
+                    | (cacheFile.exists() && cacheFile.delete())
+                    | file.renameTo(cacheFile)) {
+                journal.delete(key);
+                journal.put(record, cacheSize, cacheDir);
+                journal.writeJournal();
+                return cacheFile;
+            } else {
+                throw new IOException(String.format("Unable to move file %s to the cache",
+                        file.getName()));
+            }
         }
     }
 
     public File get(String key) {
-        assertKeyValid(key);
-        Record record = journal.get(key);
-        if (record != null) {
-            File file = new File(cacheDir, record.getName());
-            if (!file.exists()) {
-                journal.delete(key);
-                file = null;
+        synchronized (journal) {
+            assertKeyValid(key);
+            Record record = journal.get(key);
+            if (record != null) {
+                File file = new File(cacheDir, record.getName());
+                if (!file.exists()) {
+                    journal.delete(key);
+                    file = null;
+                }
+                journal.writeJournal();
+                return file;
+            } else {
+                log("[-] No requested file with key %s in cache", key);
+                return null;
             }
-            journal.writeJournal();
-            return file;
-        } else {
-            log("[-] No requested file with key %s in cache", key);
-            return null;
         }
     }
 
@@ -77,34 +81,34 @@ public class DiskLruCache {
     }
 
     private boolean delete(String key, boolean writeJournal) {
-        assertKeyValid(key);
-        Record record = journal.delete(key);
-        if (record != null) {
-            if (writeJournal) {
-                journal.writeJournal();
+        synchronized (journal) {
+            assertKeyValid(key);
+            Record record = journal.delete(key);
+            if (record != null) {
+                if (writeJournal) {
+                    journal.writeJournal();
+                }
+                File file = new File(cacheDir, record.getName());
+                return file.delete();
             }
-            File file = new File(cacheDir, record.getName());
-            return file.delete();
+            return false;
         }
-        return false;
     }
 
     public void clearCache() {
-        Set<String> keys = new HashSet<>(journal.keySet());
-        for (String key : keys) {
-            delete(key, false);
-        }
-        journal.writeJournal();
-    }
-
-    private void assertKeyValid(String key) {
-        if (key == null || key.length() == 0) {
-            throw new IllegalArgumentException(String.format("Invalid key value: '%s'", key));
+        synchronized (journal) {
+            Set<String> keys = new HashSet<>(journal.keySet());
+            for (String key : keys) {
+                delete(key, false);
+            }
+            journal.writeJournal();
         }
     }
 
     public Set<String> keySet() {
-        return journal.keySet();
+        synchronized (journal) {
+            return journal.keySet();
+        }
     }
 
     public long getCacheSize() {
@@ -112,15 +116,27 @@ public class DiskLruCache {
     }
 
     public long getUsedSpace() {
-        return journal.getTotalSize();
+        synchronized (journal) {
+            return journal.getTotalSize();
+        }
     }
 
     public long getFreeSpace() {
-        return cacheSize - journal.getTotalSize();
+        synchronized (journal) {
+            return cacheSize - journal.getTotalSize();
+        }
     }
 
     public long getJournalSize() {
-        return journal.getJournalSize();
+        synchronized (journal) {
+            return journal.getJournalSize();
+        }
+    }
+
+    private void assertKeyValid(String key) {
+        if (key == null || key.length() == 0) {
+            throw new IllegalArgumentException(String.format("Invalid key value: '%s'", key));
+        }
     }
 
     public static String keyHash(String base) {
