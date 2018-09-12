@@ -114,7 +114,8 @@ public class MainActivity extends AppCompatActivity {
         public void executeBackground() throws Throwable {
             Context context = getWeakObject();
             if (context != null) {
-                File file = File.createTempFile("rnd", ".tmp");
+                String extension = generateRandomString(3);
+                File file = File.createTempFile("rnd", "." + extension);
                 DataOutputStream stream = null;
                 try {
                     stream = new DataOutputStream(new FileOutputStream(file));
