@@ -159,7 +159,7 @@ public class DiskLruCache {
     }
 
     private static String generateName(String key, File file) {
-        return keyHash(key) + fileExtension(file.getAbsolutePath());
+        return keyHash(key) + fileExtension(file.getName());
     }
 
     private static String fileExtension(String path) {
