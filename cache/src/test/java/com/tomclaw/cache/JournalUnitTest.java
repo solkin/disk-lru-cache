@@ -25,11 +25,11 @@ public class JournalUnitTest {
 
     private Journal journal;
 
-    private CacheFileManager cacheFileManager;
+    private FileManager fileManager;
 
     @Before
     public void setUp() {
-        cacheFileManager = new CacheFileManager(folder.getRoot());
+        fileManager = new SimpleFileManager(folder.getRoot());
     }
 
     @Test
@@ -159,8 +159,7 @@ public class JournalUnitTest {
     @Test
     public void writeJournal_journalSizeIsCorrect() throws Exception {
         long cacheSize = 1000;
-        File journalFile = folder.newFile("journal.dat");
-        Journal journal = Journal.readJournal(journalFile, cacheFileManager);
+        Journal journal = Journal.readJournal(fileManager);
         File file = createRandomFile(100);
         Record record = randomRecord(file, 1001);
         journal.put(record, cacheSize);
@@ -168,14 +167,14 @@ public class JournalUnitTest {
 
         long journalSize = journal.getJournalSize();
 
+        File journalFile = fileManager.journal();
         assertEquals(journalFile.length(), journalSize);
     }
 
     @Test
     public void writeAndParseJournal_journalRestoresCorrectly() throws Exception {
         long cacheSize = 1000;
-        File journalFile = folder.newFile("journal.dat");
-        Journal original = Journal.readJournal(journalFile, cacheFileManager);
+        Journal original = Journal.readJournal(fileManager);
         File file1 = createRandomFile(100);
         File file2 = createRandomFile(200);
         File file3 = createRandomFile(150);
@@ -187,7 +186,7 @@ public class JournalUnitTest {
         original.put(record3, cacheSize);
 
         original.writeJournal();
-        Journal restored = Journal.readJournal(journalFile, cacheFileManager);
+        Journal restored = Journal.readJournal(fileManager);
 
         assertEquals(record1, restored.get(record1.getKey()));
         assertEquals(record2, restored.get(record2.getKey()));
@@ -220,8 +219,7 @@ public class JournalUnitTest {
         return file;
     }
 
-    private Journal createJournal() throws IOException {
-        File file = folder.newFile("journal.dat");
-        return Journal.readJournal(file, cacheFileManager);
+    private Journal createJournal() {
+        return Journal.readJournal(fileManager);
     }
 }

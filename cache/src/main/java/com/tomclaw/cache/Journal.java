@@ -13,17 +13,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.tomclaw.cache.Logger.log;
+
 @SuppressWarnings("unused")
 class Journal {
 
     private final File file;
-    private CacheFileManager cacheFileManager;
+    private FileManager fileManager;
     private final Map<String, Record> map = new HashMap<>();
     private long totalSize = 0;
 
-    private Journal(File file, CacheFileManager cacheFileManager) {
+    private Journal(File file, FileManager fileManager) {
         this.file = file;
-        this.cacheFileManager = cacheFileManager;
+        this.fileManager = fileManager;
     }
 
     public void put(Record record, long cacheSize) throws IOException {
@@ -35,7 +37,7 @@ class Journal {
     private void put(Record record) {
         map.put(record.getKey(), record);
         totalSize += record.getSize();
-        DiskLruCache.log("[+] Put %s (%d bytes) and cache size became %d bytes",
+        log("[+] Put %s (%d bytes) and cache size became %d bytes",
                 record.getKey(), record.getSize(), totalSize);
     }
 
@@ -43,7 +45,7 @@ class Journal {
         Record record = map.get(key);
         if (record != null) {
             updateTime(record);
-            DiskLruCache.log("[^] Update time of %s (%d bytes)", record.getKey(), record.getSize());
+            log("[^] Update time of %s (%d bytes)", record.getKey(), record.getSize());
         }
         return record;
     }
@@ -67,15 +69,15 @@ class Journal {
 
     private void prepare(long fileSize, long cacheSize) throws IOException {
         if (totalSize + fileSize > cacheSize) {
-            DiskLruCache.log("[!] File %d bytes is not fit in cache %d bytes", fileSize, totalSize);
+            log("[!] File %d bytes is not fit in cache %d bytes", fileSize, totalSize);
             List<Record> records = new ArrayList<>(map.values());
             Collections.sort(records, new RecordComparator());
             for (int c = records.size() - 1; c > 0; c--) {
                 Record record = records.remove(c);
                 long nextTotalSize = totalSize - record.getSize();
-                DiskLruCache.log("[x] Delete %s [%d ms] %d bytes and free cache to %d bytes",
+                log("[x] Delete %s [%d ms] %d bytes and free cache to %d bytes",
                         record.getKey(), record.getTime(), record.getSize(), nextTotalSize);
-                cacheFileManager.delete(record.getName());
+                fileManager.delete(record.getName());
                 map.remove(record.getKey());
                 totalSize = nextTotalSize;
 
@@ -120,9 +122,10 @@ class Journal {
         }
     }
 
-    public static Journal readJournal(File file, CacheFileManager cacheFileManager) {
-        DiskLruCache.log("[.] Start journal reading", file.getName());
-        Journal journal = new Journal(file, cacheFileManager);
+    public static Journal readJournal(FileManager fileManager) {
+        File file = fileManager.journal();
+        log("[.] Start journal reading", file.getName());
+        Journal journal = new Journal(file, fileManager);
         DataInputStream stream = null;
         try {
             stream = new DataInputStream(new FileInputStream(file));
@@ -142,8 +145,7 @@ class Journal {
                 journal.put(record);
             }
             journal.setTotalSize(totalSize);
-            DiskLruCache.log("[.] Journal read. Files count is %d and total size is %d",
-                    count, totalSize);
+            log("[.] Journal read. Files count is %d and total size is %d", count, totalSize);
         } catch (IOException ex) {
             if (stream != null) {
                 try {

@@ -8,32 +8,32 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
 
-@SuppressWarnings("unused")
+import static com.tomclaw.cache.Logger.log;
+
+@SuppressWarnings({"unused", "WeakerAccess", "UnusedReturnValue"})
 public class DiskLruCache {
 
     public static final int JOURNAL_FORMAT_VERSION = 1;
-    private static final boolean LOGGING = false;
 
     private final Journal journal;
     private final long cacheSize;
-    private final CacheFileManager cacheFileManager;
+    private final FileManager fileManager;
 
-    private DiskLruCache(CacheFileManager cacheFileManager, Journal journal, long cacheSize) {
-        this.cacheFileManager = cacheFileManager;
+    private DiskLruCache(FileManager fileManager, Journal journal, long cacheSize) {
+        this.fileManager = fileManager;
         this.journal = journal;
         this.cacheSize = cacheSize;
     }
 
     public static DiskLruCache create(File cacheDir, long cacheSize) throws IOException {
-        if (!cacheDir.exists()) {
-            if (!cacheDir.mkdirs()) {
-                throw new IOException("Unable to create specified cache directory");
-            }
-        }
-        File file = new File(cacheDir, "journal.bin");
-        CacheFileManager cacheFileManager = new CacheFileManager(cacheDir);
-        Journal journal = Journal.readJournal(file, cacheFileManager);
-        return new DiskLruCache(cacheFileManager, journal, cacheSize);
+        FileManager fileManager = new SimpleFileManager(cacheDir);
+        return create(fileManager, cacheSize);
+    }
+
+    public static DiskLruCache create(FileManager fileManager, long cacheSize) throws IOException {
+        fileManager.prepare();
+        Journal journal = Journal.readJournal(fileManager);
+        return new DiskLruCache(fileManager, journal, cacheSize);
     }
 
     public File put(String key, File file) throws IOException {
@@ -43,7 +43,7 @@ public class DiskLruCache {
             long time = System.currentTimeMillis();
             long fileSize = file.length();
             Record record = new Record(key, name, time, fileSize);
-            File cacheFile = cacheFileManager.accept(file, name);
+            File cacheFile = fileManager.accept(file, name);
             journal.delete(key);
             journal.put(record, cacheSize);
             journal.writeJournal();
@@ -56,7 +56,7 @@ public class DiskLruCache {
             assertKeyValid(key);
             Record record = journal.get(key);
             if (record != null) {
-                File file = cacheFileManager.get(record.getName());
+                File file = fileManager.get(record.getName());
                 if (!file.exists()) {
                     journal.delete(key);
                     file = null;
@@ -83,7 +83,7 @@ public class DiskLruCache {
                 if (writeJournal) {
                     journal.writeJournal();
                 }
-                cacheFileManager.delete(record.getName());
+                fileManager.delete(record.getName());
             } else {
                 throw new RecordNotFoundException();
             }
@@ -169,12 +169,6 @@ public class DiskLruCache {
             }
         }
         return suffix;
-    }
-
-    public static void log(String format, Object... args) {
-        if (LOGGING) {
-            System.out.println(String.format(format, args));
-        }
     }
 
 }
