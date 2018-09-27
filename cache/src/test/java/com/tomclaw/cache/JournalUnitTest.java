@@ -25,8 +25,11 @@ public class JournalUnitTest {
 
     private Journal journal;
 
+    private CacheFileManager cacheFileManager;
+
     @Before
     public void setUp() {
+        cacheFileManager = new CacheFileManager(folder.getRoot());
     }
 
     @Test
@@ -40,9 +43,9 @@ public class JournalUnitTest {
         Record record2 = randomRecord(file2, 1002);
         Record record3 = randomRecord(file3, 1003);
 
-        journal.put(record1, cacheSize, folder.getRoot());
-        journal.put(record2, cacheSize, folder.getRoot());
-        journal.put(record3, cacheSize, folder.getRoot());
+        journal.put(record1, cacheSize);
+        journal.put(record2, cacheSize);
+        journal.put(record3, cacheSize);
 
         assertEquals(450, journal.getTotalSize());
     }
@@ -56,8 +59,8 @@ public class JournalUnitTest {
         Record record1 = randomRecord(file1, 1001);
         Record record2 = randomRecord(file2, 1002);
 
-        journal.put(record1, cacheSize, folder.getRoot());
-        journal.put(record2, cacheSize, folder.getRoot());
+        journal.put(record1, cacheSize);
+        journal.put(record2, cacheSize);
 
         assertEquals(record1, journal.get(record1.getKey()));
         assertEquals(true, file1.exists());
@@ -73,8 +76,8 @@ public class JournalUnitTest {
         File file2 = createRandomFile(200);
         Record record1 = randomRecord(file1, 1001);
         Record record2 = randomRecord(file2, 1002);
-        journal.put(record1, cacheSize, folder.getRoot());
-        journal.put(record2, cacheSize, folder.getRoot());
+        journal.put(record1, cacheSize);
+        journal.put(record2, cacheSize);
 
         Set<String> keySet = journal.keySet();
 
@@ -94,9 +97,9 @@ public class JournalUnitTest {
         Record record2 = randomRecord(file2, 1002);
         Record record3 = randomRecord(file3, 1003);
 
-        journal.put(record1, cacheSize, folder.getRoot());
-        journal.put(record2, cacheSize, folder.getRoot());
-        journal.put(record3, cacheSize, folder.getRoot());
+        journal.put(record1, cacheSize);
+        journal.put(record2, cacheSize);
+        journal.put(record3, cacheSize);
 
         assertEquals(null, journal.get(record1.getKey()));
         assertEquals(false, file1.exists());
@@ -110,7 +113,7 @@ public class JournalUnitTest {
         Record original = randomRecord(file, 1001);
         String key = original.getKey();
 
-        journal.put(original, cacheSize, folder.getRoot());
+        journal.put(original, cacheSize);
         journal.get(key);
 
         Record updated = journal.get(key);
@@ -129,10 +132,10 @@ public class JournalUnitTest {
         Record record2 = randomRecord(file2, 1002);
         Record record3 = randomRecord(file3, 1003);
 
-        journal.put(record1, cacheSize, folder.getRoot());
-        journal.put(record2, cacheSize, folder.getRoot());
+        journal.put(record1, cacheSize);
+        journal.put(record2, cacheSize);
         journal.get(record1.getKey());
-        journal.put(record3, cacheSize, folder.getRoot());
+        journal.put(record3, cacheSize);
 
         assertEquals(null, journal.get(record2.getKey()));
         assertEquals(false, file2.exists());
@@ -146,7 +149,7 @@ public class JournalUnitTest {
         journal = createJournal();
         File file = createRandomFile(100);
         Record record = randomRecord(file, 1001);
-        journal.put(record, cacheSize, folder.getRoot());
+        journal.put(record, cacheSize);
 
         journal.delete(record.getKey());
 
@@ -157,10 +160,10 @@ public class JournalUnitTest {
     public void writeJournal_journalSizeIsCorrect() throws Exception {
         long cacheSize = 1000;
         File journalFile = folder.newFile("journal.dat");
-        Journal journal = Journal.readJournal(journalFile);
+        Journal journal = Journal.readJournal(journalFile, cacheFileManager);
         File file = createRandomFile(100);
         Record record = randomRecord(file, 1001);
-        journal.put(record, cacheSize, folder.getRoot());
+        journal.put(record, cacheSize);
         journal.writeJournal();
 
         long journalSize = journal.getJournalSize();
@@ -172,19 +175,19 @@ public class JournalUnitTest {
     public void writeAndParseJournal_journalRestoresCorrectly() throws Exception {
         long cacheSize = 1000;
         File journalFile = folder.newFile("journal.dat");
-        Journal original = Journal.readJournal(journalFile);
+        Journal original = Journal.readJournal(journalFile, cacheFileManager);
         File file1 = createRandomFile(100);
         File file2 = createRandomFile(200);
         File file3 = createRandomFile(150);
         Record record1 = randomRecord(file1, 1001);
         Record record2 = randomRecord(file2, 1002);
         Record record3 = randomRecord(file3, 1003);
-        original.put(record1, cacheSize, folder.getRoot());
-        original.put(record2, cacheSize, folder.getRoot());
-        original.put(record3, cacheSize, folder.getRoot());
+        original.put(record1, cacheSize);
+        original.put(record2, cacheSize);
+        original.put(record3, cacheSize);
 
         original.writeJournal();
-        Journal restored = Journal.readJournal(journalFile);
+        Journal restored = Journal.readJournal(journalFile, cacheFileManager);
 
         assertEquals(record1, restored.get(record1.getKey()));
         assertEquals(record2, restored.get(record2.getKey()));
@@ -219,6 +222,6 @@ public class JournalUnitTest {
 
     private Journal createJournal() throws IOException {
         File file = folder.newFile("journal.dat");
-        return Journal.readJournal(file);
+        return Journal.readJournal(file, cacheFileManager);
     }
 }

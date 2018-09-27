@@ -15,6 +15,7 @@ import com.tomclaw.cache.demo.executor.WeakObjectTask;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Random;
 
 import static com.tomclaw.cache.demo.App.cache;
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static class CreateFileTask extends WeakObjectTask<MainActivity> {
 
-        public CreateFileTask(MainActivity activity) {
+        CreateFileTask(MainActivity activity) {
             super(activity);
         }
 
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static class ClearCacheTask extends WeakObjectTask<MainActivity> {
 
-        public ClearCacheTask(MainActivity activity) {
+        ClearCacheTask(MainActivity activity) {
             super(activity);
         }
 
@@ -153,7 +154,10 @@ public class MainActivity extends AppCompatActivity {
         public void executeBackground() {
             Context context = getWeakObject();
             if (context != null) {
-                cache().clearCache();
+                try {
+                    cache().clearCache();
+                } catch (IOException ignored) {
+                }
             }
         }
 

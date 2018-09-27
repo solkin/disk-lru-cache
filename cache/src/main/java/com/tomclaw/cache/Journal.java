@@ -17,16 +17,18 @@ import java.util.Set;
 class Journal {
 
     private final File file;
+    private CacheFileManager cacheFileManager;
     private final Map<String, Record> map = new HashMap<>();
     private long totalSize = 0;
 
-    private Journal(File file) {
+    private Journal(File file, CacheFileManager cacheFileManager) {
         this.file = file;
+        this.cacheFileManager = cacheFileManager;
     }
 
-    public void put(Record record, long cacheSize, File cacheDir) throws IOException {
+    public void put(Record record, long cacheSize) throws IOException {
         long fileSize = record.getSize();
-        prepare(fileSize, cacheSize, cacheDir);
+        prepare(fileSize, cacheSize);
         put(record);
     }
 
@@ -63,7 +65,7 @@ class Journal {
         map.put(record.getKey(), new Record(record, time));
     }
 
-    private void prepare(long fileSize, long cacheSize, File cacheDir) throws IOException {
+    private void prepare(long fileSize, long cacheSize) throws IOException {
         if (totalSize + fileSize > cacheSize) {
             DiskLruCache.log("[!] File %d bytes is not fit in cache %d bytes", fileSize, totalSize);
             List<Record> records = new ArrayList<>(map.values());
@@ -73,11 +75,7 @@ class Journal {
                 long nextTotalSize = totalSize - record.getSize();
                 DiskLruCache.log("[x] Delete %s [%d ms] %d bytes and free cache to %d bytes",
                         record.getKey(), record.getTime(), record.getSize(), nextTotalSize);
-                File file = new File(cacheDir, record.getName());
-                if (file.exists() && !file.delete()) {
-                    throw new IOException(String.format("Unable to delete file %s from cache",
-                            file.getName()));
-                }
+                cacheFileManager.delete(record.getName());
                 map.remove(record.getKey());
                 totalSize = nextTotalSize;
 
@@ -122,9 +120,9 @@ class Journal {
         }
     }
 
-    public static Journal readJournal(File file) {
+    public static Journal readJournal(File file, CacheFileManager cacheFileManager) {
         DiskLruCache.log("[.] Start journal reading", file.getName());
-        Journal journal = new Journal(file);
+        Journal journal = new Journal(file, cacheFileManager);
         DataInputStream stream = null;
         try {
             stream = new DataInputStream(new FileInputStream(file));

@@ -14,12 +14,12 @@ public class DiskLruCache {
     public static final int JOURNAL_FORMAT_VERSION = 1;
     private static final boolean LOGGING = false;
 
-    private final File cacheDir;
     private final Journal journal;
     private final long cacheSize;
+    private final CacheFileManager cacheFileManager;
 
-    private DiskLruCache(File cacheDir, Journal journal, long cacheSize) {
-        this.cacheDir = cacheDir;
+    private DiskLruCache(CacheFileManager cacheFileManager, Journal journal, long cacheSize) {
+        this.cacheFileManager = cacheFileManager;
         this.journal = journal;
         this.cacheSize = cacheSize;
     }
@@ -31,8 +31,9 @@ public class DiskLruCache {
             }
         }
         File file = new File(cacheDir, "journal.bin");
-        Journal journal = Journal.readJournal(file);
-        return new DiskLruCache(cacheDir, journal, cacheSize);
+        CacheFileManager cacheFileManager = new CacheFileManager(cacheDir);
+        Journal journal = Journal.readJournal(file, cacheFileManager);
+        return new DiskLruCache(cacheFileManager, journal, cacheSize);
     }
 
     public File put(String key, File file) throws IOException {
@@ -42,18 +43,11 @@ public class DiskLruCache {
             long time = System.currentTimeMillis();
             long fileSize = file.length();
             Record record = new Record(key, name, time, fileSize);
-            File cacheFile = new File(cacheDir, name);
-            if ((cacheDir.exists() || cacheDir.mkdirs())
-                    | (cacheFile.exists() && cacheFile.delete())
-                    | file.renameTo(cacheFile)) {
-                journal.delete(key);
-                journal.put(record, cacheSize, cacheDir);
-                journal.writeJournal();
-                return cacheFile;
-            } else {
-                throw new IOException(String.format("Unable to move file %s to the cache",
-                        file.getName()));
-            }
+            File cacheFile = cacheFileManager.accept(file, name);
+            journal.delete(key);
+            journal.put(record, cacheSize);
+            journal.writeJournal();
+            return cacheFile;
         }
     }
 
@@ -62,7 +56,7 @@ public class DiskLruCache {
             assertKeyValid(key);
             Record record = journal.get(key);
             if (record != null) {
-                File file = new File(cacheDir, record.getName());
+                File file = cacheFileManager.get(record.getName());
                 if (!file.exists()) {
                     journal.delete(key);
                     file = null;
@@ -76,11 +70,12 @@ public class DiskLruCache {
         }
     }
 
-    public boolean delete(String key) {
-        return delete(key, true);
+    public void delete(String key) throws IOException, RecordNotFoundException {
+        delete(key, true);
     }
 
-    private boolean delete(String key, boolean writeJournal) {
+    private void delete(String key, boolean writeJournal)
+            throws IOException, RecordNotFoundException {
         synchronized (journal) {
             assertKeyValid(key);
             Record record = journal.delete(key);
@@ -88,18 +83,21 @@ public class DiskLruCache {
                 if (writeJournal) {
                     journal.writeJournal();
                 }
-                File file = new File(cacheDir, record.getName());
-                return file.delete();
+                cacheFileManager.delete(record.getName());
+            } else {
+                throw new RecordNotFoundException();
             }
-            return false;
         }
     }
 
-    public void clearCache() {
+    public void clearCache() throws IOException {
         synchronized (journal) {
             Set<String> keys = new HashSet<>(journal.keySet());
             for (String key : keys) {
-                delete(key, false);
+                try {
+                    delete(key, false);
+                } catch (RecordNotFoundException ignored) {
+                }
             }
             journal.writeJournal();
         }
