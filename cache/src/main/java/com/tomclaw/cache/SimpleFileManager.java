@@ -37,7 +37,7 @@ public class SimpleFileManager implements FileManager {
         if ((dir.exists() || dir.mkdirs())
                 | (newFile.exists() && newFile.delete())
                 | extFile.renameTo(newFile)) {
-            return extFile;
+            return newFile;
         } else {
             throw formatException("Unable to accept file %s", extFile);
         }
