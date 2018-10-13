@@ -3,7 +3,6 @@ package com.tomclaw.cache.demo;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -17,6 +16,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Random;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import static com.tomclaw.cache.demo.App.cache;
 
