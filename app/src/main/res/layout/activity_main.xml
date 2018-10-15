@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,7 +14,7 @@
         android:orientation="horizontal"
         android:paddingBottom="12dp">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingEnd="4dp"
@@ -22,7 +23,7 @@
             android:textStyle="bold"
             tools:ignore="RtlSymmetry" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/cache_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -36,7 +37,7 @@
         android:orientation="horizontal"
         android:paddingBottom="12dp">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingEnd="4dp"
@@ -45,7 +46,7 @@
             android:textStyle="bold"
             tools:ignore="RtlSymmetry" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/used_space"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -59,7 +60,7 @@
         android:orientation="horizontal"
         android:paddingBottom="12dp">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingEnd="4dp"
@@ -68,7 +69,7 @@
             android:textStyle="bold"
             tools:ignore="RtlSymmetry" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/free_space"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -82,7 +83,7 @@
         android:orientation="horizontal"
         android:paddingBottom="12dp">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingEnd="4dp"
@@ -91,7 +92,7 @@
             android:textStyle="bold"
             tools:ignore="RtlSymmetry" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/journal_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -105,7 +106,7 @@
         android:orientation="horizontal"
         android:paddingBottom="12dp">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingEnd="4dp"
@@ -114,7 +115,7 @@
             android:textStyle="bold"
             tools:ignore="RtlSymmetry" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/files_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -133,27 +134,27 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal"
+        android:gravity="center"
+        android:orientation="vertical"
         android:paddingTop="12dp">
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/create_file_button"
             style="@style/Widget.MaterialComponents.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="@string/create_file" />
+            android:text="@string/create_file"
+            app:icon="@drawable/file_plus" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/clear_cache_button"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="4dp"
-            android:layout_marginStart="4dp"
-            android:text="@string/clear_cache" />
+            android:text="@string/clear_cache"
+            app:icon="@drawable/trash_can" />
 
     </LinearLayout>
 
