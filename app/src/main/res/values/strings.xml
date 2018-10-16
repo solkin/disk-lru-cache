@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Disk LRU Cache Demo</string>
+    <string name="app_name">LRU Cache</string>
     <string name="cache_size">Cache size:</string>
     <string name="used_space">Used space</string>
     <string name="free_space">Free space</string>
