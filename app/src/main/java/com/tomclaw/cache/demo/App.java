@@ -26,4 +26,5 @@ public class App extends Application {
     public static DiskLruCache cache() {
         return cache;
     }
+
 }

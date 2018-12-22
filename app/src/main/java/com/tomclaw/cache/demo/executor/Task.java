@@ -50,4 +50,5 @@ public abstract class Task implements Runnable {
 
     public void onFailMain(Throwable ex) {
     }
+
 }
