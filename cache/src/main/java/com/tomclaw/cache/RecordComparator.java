@@ -9,6 +9,7 @@ class RecordComparator implements Comparator<Record> {
         return compare(record2.getTime(), record1.getTime());
     }
 
+    @SuppressWarnings("UseCompareMethod")
     private static int compare(long x, long y) {
         return (x < y) ? -1 : ((x == y) ? 0 : 1);
     }

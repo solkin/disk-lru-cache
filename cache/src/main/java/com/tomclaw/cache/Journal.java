@@ -15,7 +15,7 @@ import java.util.Set;
 
 import static com.tomclaw.cache.Logger.log;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 class Journal {
 
     private final File file;

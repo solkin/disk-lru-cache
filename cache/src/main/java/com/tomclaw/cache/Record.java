@@ -1,5 +1,6 @@
 package com.tomclaw.cache;
 
+@SuppressWarnings("WeakerAccess")
 class Record {
 
     private final String key;
