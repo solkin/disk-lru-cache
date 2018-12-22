@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 DataOutputStream stream = null;
                 try {
                     stream = new DataOutputStream(new FileOutputStream(file));
-                    int blocks = 1000 + random.nextInt(1000);
+                    int blocks = 2000 + random.nextInt(2000);
                     for (int c = 0; c < blocks; c++) {
                         stream.writeLong(random.nextLong());
                         stream.flush();
