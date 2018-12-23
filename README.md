@@ -1,8 +1,11 @@
 # Disk LRU Cache [![Download](https://api.bintray.com/packages/solkin/disk-lru-cache/disk-lru-cache/images/download.svg)](https://bintray.com/solkin/disk-lru-cache/disk-lru-cache/_latestVersion)
 
 Disk LRU (least recently used) cache with persisted journal. 
+
 This cache has specified size and location.
+
 Rarely requested files are evicted by actively used.
+
 Lightweight and extremely easy to use.
 
 ![Cache icon](/cache_icon.png)
@@ -20,7 +23,9 @@ DiskLruCache cache = DiskLruCache.create(getCacheDir(), CACHE_SIZE);
 
 ### Add file into cache
 To manage some files by cache you just need to invoke `put` method like any `Map`.
+
 Key - any string to request this file from cache.
+
 File - file, that will be moved into cache.
 
 ```java
@@ -31,7 +36,9 @@ cache.put(key, file);
 
 ### Getting file from cache
 To get file from cache, just invoke `get` method. Yes, also like any `Map`.
+
 Key is the same you put this file into cache
+
 This method will return `File` you put into cache or `null`, if file was evicted from cache.
 
 ```java
@@ -41,7 +48,9 @@ File file = cache.get(key);
 
 ### Delete file from cache
 To delete file from cache, just invoke `delete` method.
+
 Key is the same you put this file into cache
+
 File will be deleted from cache and from journal.
 
 ```java
@@ -58,7 +67,9 @@ cache().clearCache();
 
 ### List keys in cache
 To get all keys, managed by cache, invoke `keySet()` method.
+
 This will return `Set<String>`.
+
 List all keys in cache may be useful to check all files, stored in cache. 
 
 ```java
