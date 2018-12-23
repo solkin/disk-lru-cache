@@ -22,3 +22,30 @@ android {
 dependencies {
     testImplementation 'junit:junit:4.12'
 }
+
+ext {
+    bintrayRepo = 'disk-lru-cache'
+    bintrayName = 'disk-lru-cache'
+
+    publishedGroupId = 'com.tomclaw.cache'
+    libraryName = 'disk-lru-cache'
+    artifact = 'cache'
+
+    libraryDescription = 'Disk LRU cache with persisted journal'
+
+    siteUrl = 'https://github.com/solkin/disk-lru-cache'
+    gitUrl = 'https://github.com/solkin/disk-lru-cache.git'
+
+    libraryVersion = '1.0'
+
+    developerId = 'solkin'
+    developerName = 'Igor Solkin'
+    developerEmail = 'inbox@tomclaw.com'
+
+    licenseName = 'MIT License'
+    licenseUrl = 'https://opensource.org/licenses/mit-license.php'
+    allLicenses = ["MIT License"]
+}
+
+apply from: '../install.gradle'
+apply from: '../bintray.gradle'
