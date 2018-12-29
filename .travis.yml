@@ -1,0 +1,24 @@
+language: android
+jdk: oraclejdk8
+
+env:
+  matrix:
+    - ANDROID_TARGET=android-25  ANDROID_ABI=google_apis/armeabi-v7a
+
+android:
+  components:
+    - tools
+    - platform-tools
+    - build-tools-25.0.3
+    - android-25
+    - extra
+    - extra-android-support
+    - extra-android-m2repository
+
+licenses:
+    - 'android-sdk-license-.+'
+
+before_script:
+    - chmod +x gradlew
+
+script: ./gradlew test dependencies || true
