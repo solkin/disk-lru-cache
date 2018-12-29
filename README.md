@@ -1,9 +1,7 @@
 # Disk LRU Cache [![Build Status](https://travis-ci.org/solkin/disk-lru-cache.svg?branch=master)](https://travis-ci.org/solkin/disk-lru-cache) [![Download](https://api.bintray.com/packages/solkin/disk-lru-cache/disk-lru-cache/images/download.svg)](https://bintray.com/solkin/disk-lru-cache/disk-lru-cache/_latestVersion)
 
 Disk LRU (least recently used) cache with persisted journal. 
-
-This cache has specified size and location.
-
+This cache has specific capacity and location.
 Rarely requested files are evicted by actively used.
 
 Lightweight and extremely easy to use.
