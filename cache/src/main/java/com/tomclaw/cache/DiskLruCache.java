@@ -2,7 +2,7 @@ package com.tomclaw.cache;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
@@ -14,6 +14,8 @@ import static com.tomclaw.cache.Logger.log;
 public class DiskLruCache {
 
     public static final int JOURNAL_FORMAT_VERSION = 1;
+    public static final Charset UTF_8 = Charset.forName("UTF-8");
+    public static final String HASH_ALGORITHM = "MD5";
 
     private final Journal journal;
     private final long cacheSize;
@@ -139,8 +141,8 @@ public class DiskLruCache {
 
     private static String keyHash(String base) {
         try {
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            byte[] bytes = digest.digest(base.getBytes("UTF-8"));
+            MessageDigest digest = MessageDigest.getInstance(HASH_ALGORITHM);
+            byte[] bytes = digest.digest(base.getBytes(UTF_8));
             StringBuilder hexString = new StringBuilder();
             for (byte b : bytes) {
                 String hex = Integer.toHexString(0xff & b);
@@ -151,7 +153,6 @@ public class DiskLruCache {
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException ignored) {
-        } catch (UnsupportedEncodingException ignored) {
         }
         throw new IllegalArgumentException("Unable to hash key");
     }
