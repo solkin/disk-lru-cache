@@ -3,20 +3,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="10dp">
+    android:orientation="horizontal"
+    android:paddingTop="2dp"
+    android:paddingBottom="2dp">
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
+        android:paddingRight="4dp"
+        android:textSize="14sp"
         tools:text="Title" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="8dp"
+        android:layout_gravity="bottom"
+        android:layout_weight="1"
+        android:background="@drawable/dots"
+        android:paddingBottom="2dp" />
 
     <TextView
         android:id="@+id/subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingLeft="4dp"
         android:textColor="#bababa"
         android:textSize="12sp"
         tools:text="Subtitle" />
