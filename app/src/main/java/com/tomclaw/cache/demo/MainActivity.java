@@ -7,6 +7,10 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.tomclaw.cache.DiskLruCache;
 import com.tomclaw.cache.demo.executor.TaskExecutor;
 import com.tomclaw.cache.demo.executor.WeakObjectTask;
@@ -15,9 +19,9 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import static com.tomclaw.cache.demo.App.cache;
 
@@ -31,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView journalSizeView;
     private TextView filesCountView;
     private ProgressBar cacheUsageView;
+
+    private CacheAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +64,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        RecyclerView recyclerView = findViewById(R.id.recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new CacheAdapter(this);
+        recyclerView.setAdapter(adapter);
+
         bindViews();
     }
 
@@ -69,6 +80,13 @@ public class MainActivity extends AppCompatActivity {
         journalSizeView.setText(formatBytes(cache.getJournalSize()));
         filesCountView.setText(String.valueOf(cache.keySet().size()));
         cacheUsageView.setProgress((int) (100 * cache.getUsedSpace() / cache.getCacheSize()));
+        List<CacheAdapter.CacheItem> cacheItems = new ArrayList<>();
+        for (String key : cache.keySet()) {
+            File file = cache.get(key);
+            cacheItems.add(new CacheAdapter.CacheItem(key, formatBytes(file.length())));
+        }
+        adapter.setCacheItems(cacheItems);
+        adapter.notifyDataSetChanged();
     }
 
     public String formatBytes(long bytes) {
