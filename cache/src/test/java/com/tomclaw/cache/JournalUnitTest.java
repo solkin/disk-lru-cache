@@ -14,7 +14,10 @@ import java.util.Set;
 
 import static com.tomclaw.cache.Helpers.randomString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class JournalUnitTest {
 
@@ -63,9 +66,9 @@ public class JournalUnitTest {
         journal.put(record2, cacheSize);
 
         assertEquals(record1, journal.get(record1.getKey()));
-        assertEquals(true, file1.exists());
+        assertTrue(file1.exists());
         assertEquals(record2, journal.get(record2.getKey()));
-        assertEquals(true, file2.exists());
+        assertTrue(file2.exists());
     }
 
     @Test
@@ -82,8 +85,8 @@ public class JournalUnitTest {
         Set<String> keySet = journal.keySet();
 
         assertEquals(2, keySet.size());
-        assertEquals(true, keySet.contains(record1.getKey()));
-        assertEquals(true, keySet.contains(record2.getKey()));
+        assertTrue(keySet.contains(record1.getKey()));
+        assertTrue(keySet.contains(record2.getKey()));
     }
 
     @Test
@@ -101,8 +104,8 @@ public class JournalUnitTest {
         journal.put(record2, cacheSize);
         journal.put(record3, cacheSize);
 
-        assertEquals(null, journal.get(record1.getKey()));
-        assertEquals(false, file1.exists());
+        assertNull(journal.get(record1.getKey()));
+        assertFalse(file1.exists());
     }
 
     @Test
@@ -137,10 +140,10 @@ public class JournalUnitTest {
         journal.get(record1.getKey());
         journal.put(record3, cacheSize);
 
-        assertEquals(null, journal.get(record2.getKey()));
-        assertEquals(false, file2.exists());
+        assertNull(journal.get(record2.getKey()));
+        assertFalse(file2.exists());
         assertEquals(record1.getName(), journal.get(record1.getKey()).getName());
-        assertEquals(true, file1.exists());
+        assertTrue(file1.exists());
     }
 
     @Test
@@ -153,7 +156,7 @@ public class JournalUnitTest {
 
         journal.delete(record.getKey());
 
-        assertEquals(null, journal.get(record.getKey()));
+        assertNull(journal.get(record.getKey()));
     }
 
     @Test
@@ -204,17 +207,11 @@ public class JournalUnitTest {
         String name = randomString(8);
         String extension = randomString(3);
         File file = folder.newFile(name + "." + extension);
-        DataOutputStream stream = null;
-        try {
-            stream = new DataOutputStream(new FileOutputStream(file));
+        try (DataOutputStream stream = new DataOutputStream(new FileOutputStream(file))) {
             for (int c = 0; c < size; c++) {
                 stream.writeByte(random.nextInt(255));
             }
             stream.flush();
-        } finally {
-            if (stream != null) {
-                stream.close();
-            }
         }
         return file;
     }
