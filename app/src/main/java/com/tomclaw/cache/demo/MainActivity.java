@@ -20,8 +20,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import static com.tomclaw.cache.demo.App.cache;
 
@@ -81,7 +83,8 @@ public class MainActivity extends AppCompatActivity {
         filesCountView.setText(String.valueOf(cache.keySet().size()));
         cacheUsageView.setProgress((int) (100 * cache.getUsedSpace() / cache.getCacheSize()));
         List<CacheAdapter.CacheItem> cacheItems = new ArrayList<>();
-        for (String key : cache.keySet()) {
+        Set<String> keySet = Collections.unmodifiableSet(cache.keySet());
+        for (String key : keySet) {
             File file = cache.get(key);
             cacheItems.add(new CacheAdapter.CacheItem(key, formatBytes(file.length())));
         }
