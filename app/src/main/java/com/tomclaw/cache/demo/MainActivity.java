@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                 DataOutputStream stream = null;
                 try {
                     stream = new DataOutputStream(new FileOutputStream(file));
-                    int blocks = 2000 + random.nextInt(2000);
+                    int blocks = 2000 + random.nextInt(6000);
                     for (int c = 0; c < blocks; c++) {
                         stream.writeLong(random.nextLong());
                         stream.flush();
