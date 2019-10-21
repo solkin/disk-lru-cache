@@ -13,7 +13,6 @@ import static com.tomclaw.cache.Logger.log;
 @SuppressWarnings({"unused", "WeakerAccess", "UnusedReturnValue"})
 public class DiskLruCache {
 
-    public static final int JOURNAL_FORMAT_VERSION = 1;
     public static final Charset UTF_8 = Charset.forName("UTF-8");
     public static final String HASH_ALGORITHM = "MD5";
 

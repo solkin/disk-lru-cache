@@ -18,6 +18,8 @@ import static com.tomclaw.cache.Logger.log;
 @SuppressWarnings({"unused", "WeakerAccess"})
 class Journal {
 
+    public static final int JOURNAL_FORMAT_VERSION = 1;
+
     private final File file;
     private FileManager fileManager;
     private final Map<String, Record> map = new HashMap<>();
@@ -104,7 +106,7 @@ class Journal {
         DataOutputStream stream = null;
         try {
             stream = new DataOutputStream(new FileOutputStream(file));
-            stream.writeShort(DiskLruCache.JOURNAL_FORMAT_VERSION);
+            stream.writeShort(JOURNAL_FORMAT_VERSION);
             stream.writeInt(map.size());
             for (Record record : map.values()) {
                 stream.writeUTF(record.getKey());
@@ -130,7 +132,7 @@ class Journal {
         try {
             stream = new DataInputStream(new FileInputStream(file));
             int version = stream.readShort();
-            if (version != DiskLruCache.JOURNAL_FORMAT_VERSION) {
+            if (version != JOURNAL_FORMAT_VERSION) {
                 throw new IllegalArgumentException("Invalid journal format version");
             }
             int count = stream.readInt();
