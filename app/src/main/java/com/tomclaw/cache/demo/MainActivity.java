@@ -1,6 +1,5 @@
 package com.tomclaw.cache.demo;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
@@ -13,23 +12,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.tomclaw.cache.DiskLruCache;
 import com.tomclaw.cache.demo.executor.TaskExecutor;
-import com.tomclaw.cache.demo.executor.WeakObjectTask;
+import com.tomclaw.cache.demo.task.ClearCacheTask;
+import com.tomclaw.cache.demo.task.CreateFileTask;
 
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import static com.tomclaw.cache.demo.App.cache;
 
 public class MainActivity extends AppCompatActivity {
-
-    private static Random random = new Random(System.currentTimeMillis());
 
     private TextView cacheSizeView;
     private TextView usedSpaceView;
@@ -74,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         bindViews();
     }
 
-    private void bindViews() {
+    public void bindViews() {
         DiskLruCache cache = cache();
         cacheSizeView.setText(formatBytes(cache.getCacheSize()));
         usedSpaceView.setText(formatBytes(cache.getUsedSpace()));
@@ -102,93 +96,6 @@ public class MainActivity extends AppCompatActivity {
             return resources.getString(R.string.mibibytes, bytes / 1024.0f / 1024.0f);
         } else {
             return resources.getString(R.string.gigibytes, bytes / 1024.0f / 1024.0f / 1024.0f);
-        }
-    }
-
-    public static String generateRandomString() {
-        return generateRandomString(16);
-    }
-
-    public static String generateRandomString(int length) {
-        return generateRandomString(random, length, length);
-    }
-
-    public static String generateRandomString(Random r, int minChars, int maxChars) {
-        int wordLength = minChars;
-        int delta = maxChars - minChars;
-        if (delta > 0) {
-            wordLength += r.nextInt(delta);
-        }
-        StringBuilder sb = new StringBuilder(wordLength);
-        for (int i = 0; i < wordLength; i++) {
-            char tmp = (char) ('a' + r.nextInt('z' - 'a'));
-            sb.append(tmp);
-        }
-        return sb.toString();
-    }
-
-    private static class CreateFileTask extends WeakObjectTask<MainActivity> {
-
-        CreateFileTask(MainActivity activity) {
-            super(activity);
-        }
-
-        @Override
-        public void executeBackground() throws Throwable {
-            Context context = getWeakObject();
-            if (context != null) {
-                String extension = generateRandomString(3);
-                File file = File.createTempFile("rnd", "." + extension);
-                DataOutputStream stream = null;
-                try {
-                    stream = new DataOutputStream(new FileOutputStream(file));
-                    int blocks = 2000 + random.nextInt(6000);
-                    for (int c = 0; c < blocks; c++) {
-                        stream.writeLong(random.nextLong());
-                        stream.flush();
-                    }
-                } finally {
-                    if (stream != null) {
-                        stream.close();
-                    }
-                }
-                String key = generateRandomString();
-                cache().put(key, file);
-            }
-        }
-
-        @Override
-        public void onSuccessMain() {
-            MainActivity activity = getWeakObject();
-            if (activity != null) {
-                activity.bindViews();
-            }
-        }
-    }
-
-    private static class ClearCacheTask extends WeakObjectTask<MainActivity> {
-
-        ClearCacheTask(MainActivity activity) {
-            super(activity);
-        }
-
-        @Override
-        public void executeBackground() {
-            Context context = getWeakObject();
-            if (context != null) {
-                try {
-                    cache().clearCache();
-                } catch (IOException ignored) {
-                }
-            }
-        }
-
-        @Override
-        public void onSuccessMain() {
-            MainActivity activity = getWeakObject();
-            if (activity != null) {
-                activity.bindViews();
-            }
         }
     }
 

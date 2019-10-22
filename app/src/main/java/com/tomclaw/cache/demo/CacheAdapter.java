@@ -45,7 +45,7 @@ public class CacheAdapter extends RecyclerView.Adapter<CacheAdapter.ViewHolder> 
         return cacheItems.get(id);
     }
 
-    public void setCacheItems(List<CacheItem> cacheItems) {
+    void setCacheItems(List<CacheItem> cacheItems) {
         this.cacheItems.clear();
         this.cacheItems.addAll(cacheItems);
     }
@@ -78,8 +78,8 @@ public class CacheAdapter extends RecyclerView.Adapter<CacheAdapter.ViewHolder> 
         }
 
         void bindCacheItem(CacheItem item) {
-            title.setText(item.key);
-            subtitle.setText(item.size);
+            title.setText(item.getKey());
+            subtitle.setText(item.getSize());
         }
 
     }
@@ -89,7 +89,7 @@ public class CacheAdapter extends RecyclerView.Adapter<CacheAdapter.ViewHolder> 
         private final String key;
         private final String size;
 
-        public CacheItem(String key, String size) {
+        CacheItem(String key, String size) {
             this.key = key;
             this.size = size;
         }
@@ -102,4 +102,5 @@ public class CacheAdapter extends RecyclerView.Adapter<CacheAdapter.ViewHolder> 
             return size;
         }
     }
+
 }
