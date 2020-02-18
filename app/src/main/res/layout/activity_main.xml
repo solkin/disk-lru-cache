@@ -159,7 +159,7 @@
             android:layout_marginBottom="0dp"
             android:layout_weight="1"
             android:text="@string/create_file"
-            app:icon="@drawable/file_plus" />
+            app:icon="@drawable/ic_file_plus" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/clear_cache_button"
@@ -175,7 +175,7 @@
             android:layout_marginBottom="0dp"
             android:layout_weight="1"
             android:text="@string/clear_cache"
-            app:icon="@drawable/trash_can" />
+            app:icon="@drawable/ic_trash_can" />
 
     </LinearLayout>
 
