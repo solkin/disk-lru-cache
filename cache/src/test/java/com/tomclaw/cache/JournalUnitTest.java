@@ -219,4 +219,5 @@ public class JournalUnitTest {
     private Journal createJournal() {
         return Journal.readJournal(fileManager);
     }
+
 }

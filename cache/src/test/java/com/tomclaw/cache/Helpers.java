@@ -2,19 +2,19 @@ package com.tomclaw.cache;
 
 import java.util.Random;
 
-public class Helpers {
+class Helpers {
 
     private static final Random random = new Random(System.currentTimeMillis());
 
-    public static String randomString() {
+    static String randomString() {
         return randomString(16);
     }
 
-    public static String randomString(int length) {
+    static String randomString(int length) {
         return randomString(random, length, length);
     }
 
-    public static String randomString(Random r, int minChars, int maxChars) {
+    static String randomString(Random r, int minChars, int maxChars) {
         int wordLength = minChars;
         int delta = maxChars - minChars;
         if (delta > 0) {
@@ -28,7 +28,7 @@ public class Helpers {
         return sb.toString();
     }
 
-    public static long randomLong() {
+    static long randomLong() {
         return random.nextLong();
     }
 

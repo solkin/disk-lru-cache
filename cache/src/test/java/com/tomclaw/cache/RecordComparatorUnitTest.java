@@ -56,4 +56,5 @@ public class RecordComparatorUnitTest {
     private RecordComparator createComparator() {
         return new RecordComparator();
     }
+
 }
