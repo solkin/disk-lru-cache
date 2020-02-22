@@ -84,7 +84,7 @@ public class CacheAdapter extends RecyclerView.Adapter<CacheAdapter.ViewHolder> 
 
     }
 
-    public static class CacheItem {
+    static class CacheItem {
 
         private final String key;
         private final String size;
@@ -94,13 +94,14 @@ public class CacheAdapter extends RecyclerView.Adapter<CacheAdapter.ViewHolder> 
             this.size = size;
         }
 
-        public String getKey() {
+        String getKey() {
             return key;
         }
 
-        public String getSize() {
+        String getSize() {
             return size;
         }
+
     }
 
 }
