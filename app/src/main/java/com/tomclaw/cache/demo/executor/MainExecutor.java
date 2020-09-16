@@ -3,7 +3,7 @@ package com.tomclaw.cache.demo.executor;
 import android.os.Handler;
 import android.os.Looper;
 
-@SuppressWarnings({"WeakerAccess", "unused"})
+@SuppressWarnings({"WeakerAccess"})
 public class MainExecutor {
 
     private static Handler mainHandler = new Handler(Looper.getMainLooper());

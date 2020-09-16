@@ -3,7 +3,7 @@ package com.tomclaw.cache.demo.executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@SuppressWarnings({"WeakerAccess", "unused"})
+@SuppressWarnings({"WeakerAccess"})
 public class TaskExecutor {
 
     private final ExecutorService threadExecutor = Executors.newSingleThreadExecutor();
