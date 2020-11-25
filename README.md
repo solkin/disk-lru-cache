@@ -89,7 +89,7 @@ cache.getJournalSize(); // Internal cache journal size in bytes.
 ### License
     MIT License
     
-    Copyright (c) 2018 Igor Solkin
+    Copyright (c) 2020 Igor Solkin
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
