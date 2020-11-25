@@ -15,7 +15,7 @@ import java.util.List;
 public class CacheAdapter extends RecyclerView.Adapter<CacheAdapter.ViewHolder> {
 
     private final List<CacheItem> cacheItems;
-    private LayoutInflater inflater;
+    private final LayoutInflater inflater;
     private ItemClickListener clickListener;
 
     CacheAdapter(Context context) {
