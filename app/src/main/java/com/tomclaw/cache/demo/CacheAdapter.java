@@ -41,21 +41,15 @@ public class CacheAdapter extends RecyclerView.Adapter<CacheAdapter.ViewHolder> 
         return cacheItems.size();
     }
 
-    CacheItem getItem(int id) {
-        return cacheItems.get(id);
-    }
-
     void setCacheItems(List<CacheItem> cacheItems) {
         this.cacheItems.clear();
         this.cacheItems.addAll(cacheItems);
     }
 
-    void setClickListener(ItemClickListener itemClickListener) {
-        this.clickListener = itemClickListener;
-    }
-
     public interface ItemClickListener {
+
         void onItemClick(View view, int position);
+
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
