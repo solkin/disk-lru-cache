@@ -149,6 +149,8 @@ class Journal {
             journal.setTotalSize(totalSize);
             log("[.] Journal read. Files count is %d and total size is %d", count, totalSize);
         } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
             if (stream != null) {
                 try {
                     stream.close();
