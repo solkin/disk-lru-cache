@@ -20,7 +20,7 @@ allprojects {
 ```
 **Step 2.** Add the dependency
 ```groovy
-implementation 'com.github.solkin:disk-lru-cache:1.1'
+implementation 'com.github.solkin:disk-lru-cache:1.2'
 ```
 
 ### Create DiskLruCache
