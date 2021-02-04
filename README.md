@@ -9,8 +9,18 @@ Lightweight and extremely easy to use.
 ![Cache icon](/cache_icon.png)
 
 ### Add dependency
+**Step 1.** Add the JitPack repository to your build file
 ```groovy
-implementation 'com.tomclaw.cache:cache:1.0'
+allprojects {
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
+	}
+}
+```
+**Step 2.** Add the dependency
+```groovy
+implementation 'com.github.solkin:disk-lru-cache:1.1'
 ```
 
 ### Create DiskLruCache
