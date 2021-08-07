@@ -8,8 +8,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.tomclaw.cache.Logger.log;
-
 @SuppressWarnings({"unused", "WeakerAccess", "UnusedReturnValue"})
 public class DiskLruCache {
 
@@ -19,22 +17,25 @@ public class DiskLruCache {
     private final Journal journal;
     private final long cacheSize;
     private final FileManager fileManager;
+    private final Logger logger;
 
-    private DiskLruCache(FileManager fileManager, Journal journal, long cacheSize) {
+    private DiskLruCache(FileManager fileManager, Journal journal, Logger logger, long cacheSize) {
         this.fileManager = fileManager;
         this.journal = journal;
+        this.logger = logger;
         this.cacheSize = cacheSize;
     }
 
     public static DiskLruCache create(File cacheDir, long cacheSize) throws IOException {
         FileManager fileManager = new SimpleFileManager(cacheDir);
-        return create(fileManager, cacheSize);
+        Logger logger = new SimpleLogger(false);
+        return create(fileManager, logger, cacheSize);
     }
 
-    public static DiskLruCache create(FileManager fileManager, long cacheSize) throws IOException {
+    public static DiskLruCache create(FileManager fileManager, Logger logger, long cacheSize) throws IOException {
         fileManager.prepare();
-        Journal journal = Journal.readJournal(fileManager);
-        return new DiskLruCache(fileManager, journal, cacheSize);
+        Journal journal = Journal.readJournal(fileManager, logger);
+        return new DiskLruCache(fileManager, journal, logger, cacheSize);
     }
 
     public File put(String key, File file) throws IOException {
@@ -65,7 +66,7 @@ public class DiskLruCache {
                 journal.writeJournal();
                 return file;
             } else {
-                log("[-] No requested file with key %s in cache", key);
+                logger.log("[-] No requested file with key %s in cache", key);
                 return null;
             }
         }

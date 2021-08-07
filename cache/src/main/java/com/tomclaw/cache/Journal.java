@@ -14,21 +14,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.tomclaw.cache.Logger.log;
-
 @SuppressWarnings({"unused", "WeakerAccess"})
 class Journal {
 
     public static final int JOURNAL_FORMAT_VERSION = 1;
 
     private final File file;
-    private FileManager fileManager;
+    private final FileManager fileManager;
+    private final Logger logger;
     private final Map<String, Record> map = new HashMap<>();
     private long totalSize = 0;
 
-    private Journal(File file, FileManager fileManager) {
+    private Journal(File file, FileManager fileManager, Logger logger) {
         this.file = file;
         this.fileManager = fileManager;
+        this.logger = logger;
     }
 
     public void put(Record record, long cacheSize) throws IOException {
@@ -40,7 +40,7 @@ class Journal {
     private void put(Record record) {
         map.put(record.getKey(), record);
         totalSize += record.getSize();
-        log("[+] Put %s (%d bytes) and cache size became %d bytes",
+        logger.log("[+] Put %s (%d bytes) and cache size became %d bytes",
                 record.getKey(), record.getSize(), totalSize);
     }
 
@@ -48,7 +48,7 @@ class Journal {
         Record record = map.get(key);
         if (record != null) {
             updateTime(record);
-            log("[^] Update time of %s (%d bytes)", record.getKey(), record.getSize());
+            logger.log("[^] Update time of %s (%d bytes)", record.getKey(), record.getSize());
         }
         return record;
     }
@@ -72,13 +72,13 @@ class Journal {
 
     private void prepare(long fileSize, long cacheSize) throws IOException {
         if (totalSize + fileSize > cacheSize) {
-            log("[!] File %d bytes is not fit in cache %d bytes", fileSize, totalSize);
+            logger.log("[!] File %d bytes is not fit in cache %d bytes", fileSize, totalSize);
             List<Record> records = new ArrayList<>(map.values());
             Collections.sort(records, new RecordComparator());
             for (int c = records.size() - 1; c > 0; c--) {
                 Record record = records.remove(c);
                 long nextTotalSize = totalSize - record.getSize();
-                log("[x] Delete %s [%d ms] %d bytes and free cache to %d bytes",
+                logger.log("[x] Delete %s [%d ms] %d bytes and free cache to %d bytes",
                         record.getKey(), record.getTime(), record.getSize(), nextTotalSize);
                 fileManager.delete(record.getName());
                 map.remove(record.getKey());
@@ -116,15 +116,15 @@ class Journal {
                 }
             }
         } catch (IOException ex) {
-            log("[.] Failed to write journal %s", ex.getMessage());
+            logger.log("[.] Failed to write journal %s", ex.getMessage());
             ex.printStackTrace();
         }
     }
 
-    public static Journal readJournal(FileManager fileManager) {
+    public static Journal readJournal(FileManager fileManager, Logger logger) {
         File file = fileManager.journal();
-        log("[.] Start journal reading", file.getName());
-        Journal journal = new Journal(file, fileManager);
+        logger.log("[.] Start journal reading", file.getName());
+        Journal journal = new Journal(file, fileManager, logger);
         try (FileInputStream fileStream = new FileInputStream(file)) {
             try (DataInputStream stream = new DataInputStream(fileStream)) {
                 int version = stream.readShort();
@@ -143,12 +143,12 @@ class Journal {
                     journal.put(record);
                 }
                 journal.setTotalSize(totalSize);
-                log("[.] Journal read. Files count is %d and total size is %d", count, totalSize);
+                logger.log("[.] Journal read. Files count is %d and total size is %d", count, totalSize);
             }
         } catch (FileNotFoundException ignored) {
-            log("[.] Journal not found and will be created");
+            logger.log("[.] Journal not found and will be created");
         } catch (IOException ex) {
-            log("[.] Failed to read journal %s", ex.getMessage());
+            logger.log("[.] Failed to read journal %s", ex.getMessage());
             ex.printStackTrace();
         }
         return journal;

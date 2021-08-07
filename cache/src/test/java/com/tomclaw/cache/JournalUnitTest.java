@@ -24,15 +24,17 @@ public class JournalUnitTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    private Random random = new Random(System.currentTimeMillis());
+    private final Random random = new Random(System.currentTimeMillis());
 
     private Journal journal;
 
     private FileManager fileManager;
+    private Logger logger;
 
     @Before
     public void setUp() {
         fileManager = new SimpleFileManager(folder.getRoot());
+        logger = new SimpleLogger(false);
     }
 
     @Test
@@ -162,7 +164,7 @@ public class JournalUnitTest {
     @Test
     public void writeJournal_journalSizeIsCorrect() throws Exception {
         long cacheSize = 1000;
-        Journal journal = Journal.readJournal(fileManager);
+        Journal journal = Journal.readJournal(fileManager, logger);
         File file = createRandomFile(100);
         Record record = randomRecord(file, 1001);
         journal.put(record, cacheSize);
@@ -177,7 +179,7 @@ public class JournalUnitTest {
     @Test
     public void writeAndParseJournal_journalRestoresCorrectly() throws Exception {
         long cacheSize = 1000;
-        Journal original = Journal.readJournal(fileManager);
+        Journal original = Journal.readJournal(fileManager, logger);
         File file1 = createRandomFile(100);
         File file2 = createRandomFile(200);
         File file3 = createRandomFile(150);
@@ -189,7 +191,7 @@ public class JournalUnitTest {
         original.put(record3, cacheSize);
 
         original.writeJournal();
-        Journal restored = Journal.readJournal(fileManager);
+        Journal restored = Journal.readJournal(fileManager, logger);
 
         assertEquals(record1, restored.get(record1.getKey()));
         assertEquals(record2, restored.get(record2.getKey()));
@@ -217,7 +219,7 @@ public class JournalUnitTest {
     }
 
     private Journal createJournal() {
-        return Journal.readJournal(fileManager);
+        return Journal.readJournal(fileManager, logger);
     }
 
 }
