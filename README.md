@@ -20,7 +20,7 @@ allprojects {
 ```
 **Step 2.** Add the dependency
 ```groovy
-implementation 'com.github.solkin:disk-lru-cache:1.3'
+implementation 'com.github.solkin:disk-lru-cache:1.4'
 ```
 
 ### Create DiskLruCache
@@ -99,7 +99,7 @@ cache.getJournalSize(); // Internal cache journal size in bytes.
 ### License
     MIT License
     
-    Copyright (c) 2020 Igor Solkin
+    Copyright (c) 2021 Igor Solkin
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
