@@ -1,5 +1,6 @@
 package com.tomclaw.cache.demo;
 
+import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
@@ -47,18 +48,12 @@ public class MainActivity extends AppCompatActivity {
         filesCountView = findViewById(R.id.files_count);
         View createFileButton = findViewById(R.id.create_file_button);
         View clearCacheButton = findViewById(R.id.clear_cache_button);
-        createFileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TaskExecutor.getInstance().execute(new CreateFileTask(MainActivity.this));
-            }
-        });
-        clearCacheButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TaskExecutor.getInstance().execute(new ClearCacheTask(MainActivity.this));
-            }
-        });
+        createFileButton.setOnClickListener(v ->
+                TaskExecutor.getInstance().execute(new CreateFileTask(MainActivity.this))
+        );
+        clearCacheButton.setOnClickListener(v ->
+                TaskExecutor.getInstance().execute(new ClearCacheTask(MainActivity.this))
+        );
 
         RecyclerView recyclerView = findViewById(R.id.recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -68,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         bindViews();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void bindViews() {
         DiskLruCache cache = cache();
         cacheSizeView.setText(formatBytes(cache.getCacheSize()));

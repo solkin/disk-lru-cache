@@ -16,7 +16,6 @@ public class CacheAdapter extends RecyclerView.Adapter<CacheAdapter.ViewHolder> 
 
     private final List<CacheItem> cacheItems;
     private final LayoutInflater inflater;
-    private ItemClickListener clickListener;
 
     CacheAdapter(Context context) {
         this.inflater = LayoutInflater.from(context);
@@ -46,13 +45,7 @@ public class CacheAdapter extends RecyclerView.Adapter<CacheAdapter.ViewHolder> 
         this.cacheItems.addAll(cacheItems);
     }
 
-    public interface ItemClickListener {
-
-        void onItemClick(View view, int position);
-
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView title;
         private final TextView subtitle;
@@ -61,14 +54,6 @@ public class CacheAdapter extends RecyclerView.Adapter<CacheAdapter.ViewHolder> 
             super(itemView);
             title = itemView.findViewById(R.id.title);
             subtitle = itemView.findViewById(R.id.subtitle);
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            if (clickListener != null) {
-                clickListener.onItemClick(view, getAdapterPosition());
-            }
         }
 
         void bindCacheItem(CacheItem item) {

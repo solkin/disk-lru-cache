@@ -1,4 +1,4 @@
-# Disk LRU Cache [![Build Status](https://travis-ci.com/solkin/disk-lru-cache.svg?branch=master)](https://travis-ci.com/solkin/disk-lru-cache) [![](https://jitpack.io/v/solkin/disk-lru-cache.svg)](https://jitpack.io/#solkin/disk-lru-cache) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/4321989fecfe44eab37ef08a057442d9)](https://app.codacy.com/app/solkin/disk-lru-cache?utm_source=github.com&utm_medium=referral&utm_content=solkin/disk-lru-cache&utm_campaign=Badge_Grade_Dashboard) [![Android Arsenal]( https://img.shields.io/badge/Android%20Arsenal-Disk%20LRU%20Cache-green.svg?style=flat )]( https://android-arsenal.com/details/1/7454 )
+# Disk LRU Cache [![](https://jitpack.io/v/solkin/disk-lru-cache.svg)](https://jitpack.io/#solkin/disk-lru-cache) [![Android Arsenal]( https://img.shields.io/badge/Android%20Arsenal-Disk%20LRU%20Cache-green.svg?style=flat )]( https://android-arsenal.com/details/1/7454 )
 
 Disk LRU (least recently used) cache with persisted journal. 
 This cache has specific capacity and location.
@@ -99,7 +99,7 @@ cache.getJournalSize(); // Internal cache journal size in bytes.
 ### License
     MIT License
     
-    Copyright (c) 2021 Igor Solkin
+    Copyright (c) 2022 Igor Solkin
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
