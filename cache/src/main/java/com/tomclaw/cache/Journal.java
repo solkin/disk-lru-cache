@@ -1,5 +1,7 @@
 package com.tomclaw.cache;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -105,7 +107,7 @@ class Journal {
 
     public void writeJournal() {
         try (FileOutputStream fileStream = new FileOutputStream(file)) {
-            try (DataOutputStream stream = new DataOutputStream(fileStream)) {
+            try (DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(fileStream))) {
                 stream.writeShort(JOURNAL_FORMAT_VERSION);
                 stream.writeInt(map.size());
                 for (Record record : map.values()) {
@@ -126,7 +128,7 @@ class Journal {
         logger.log("[.] Start journal reading", file.getName());
         Journal journal = new Journal(file, fileManager, logger);
         try (FileInputStream fileStream = new FileInputStream(file)) {
-            try (DataInputStream stream = new DataInputStream(fileStream)) {
+            try (DataInputStream stream = new DataInputStream(new BufferedInputStream(fileStream))) {
                 int version = stream.readShort();
                 if (version != JOURNAL_FORMAT_VERSION) {
                     throw new IllegalArgumentException("Invalid journal format version");
