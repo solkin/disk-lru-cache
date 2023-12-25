@@ -1,7 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 32
+    compileSdk 32
+    namespace = "com.tomclaw.cache.demo"
     defaultConfig {
         applicationId "com.tomclaw.cache.demo"
         minSdkVersion 16

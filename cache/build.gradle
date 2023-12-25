@@ -4,8 +4,8 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
-
+    compileSdk 30
+    namespace = "com.tomclaw.cache"
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 30
@@ -22,18 +22,4 @@ android {
 
 dependencies {
     testImplementation 'junit:junit:4.13.1'
-}
-
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-
-                groupId = 'com.tomclaw.cache'
-                artifactId = 'cache'
-                version = '1.4'
-            }
-        }
-    }
 }
