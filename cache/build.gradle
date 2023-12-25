@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    compileSdk 30
+    compileSdk 33
     namespace = "com.tomclaw.cache"
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 30
+        targetSdkVersion 33
     }
 
     buildTypes {
