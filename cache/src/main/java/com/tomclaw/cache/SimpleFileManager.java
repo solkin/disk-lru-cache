@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public class SimpleFileManager implements FileManager {
 
-    private File dir;
+    private final File dir;
 
     @SuppressWarnings("WeakerAccess")
     public SimpleFileManager(File dir) {

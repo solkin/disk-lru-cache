@@ -134,7 +134,7 @@ public class DiskLruCache {
     }
 
     private static void assertKeyValid(String key) {
-        if (key == null || key.length() == 0) {
+        if (key == null || key.isEmpty()) {
             throw new IllegalArgumentException(String.format("Invalid key value: '%s'", key));
         }
     }
