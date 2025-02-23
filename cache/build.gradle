@@ -32,7 +32,7 @@ publishing {
             version = '1.7'
 
             afterEvaluate {
-                from components.release
+                from components.findByName('release')
             }
         }
     }
