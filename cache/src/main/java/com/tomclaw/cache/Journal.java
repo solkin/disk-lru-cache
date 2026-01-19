@@ -55,6 +55,23 @@ class Journal {
         return record;
     }
 
+    /**
+     * Returns record without updating access time.
+     * Used for querying record info without affecting LRU order.
+     */
+    public Record peek(String key) {
+        return map.get(key);
+    }
+
+    /**
+     * Returns all records sorted by access time (most recent first).
+     */
+    public List<Record> getRecordsSortedByTime() {
+        List<Record> records = new ArrayList<>(map.values());
+        Collections.sort(records, new RecordComparator());
+        return records;
+    }
+
     public Record delete(String key) {
         Record record = map.remove(key);
         if (record != null) {

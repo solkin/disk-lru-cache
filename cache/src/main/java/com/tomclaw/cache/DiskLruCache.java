@@ -6,7 +6,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings({"unused", "WeakerAccess", "UnusedReturnValue"})
@@ -151,6 +153,50 @@ public class DiskLruCache {
     public long getJournalSize() {
         synchronized (journal) {
             return journal.getJournalSize();
+        }
+    }
+
+    /**
+     * Returns information about all cached records sorted by last access time
+     * (most recently accessed first). This method does not update access times.
+     *
+     * @return list of RecordInfo objects sorted by LRU order
+     */
+    public List<RecordInfo> getRecordsInfo() {
+        synchronized (journal) {
+            List<Record> records = journal.getRecordsSortedByTime();
+            List<RecordInfo> result = new ArrayList<>(records.size());
+            for (Record record : records) {
+                result.add(new RecordInfo(
+                        record.getKey(),
+                        record.getName(),
+                        record.getSize(),
+                        record.getTime()
+                ));
+            }
+            return result;
+        }
+    }
+
+    /**
+     * Returns information about a specific cached record without updating access time.
+     *
+     * @param key the key to look up
+     * @return RecordInfo or null if not found
+     */
+    public RecordInfo getRecordInfo(String key) {
+        synchronized (journal) {
+            assertKeyValid(key);
+            Record record = journal.peek(key);
+            if (record != null) {
+                return new RecordInfo(
+                        record.getKey(),
+                        record.getName(),
+                        record.getSize(),
+                        record.getTime()
+                );
+            }
+            return null;
         }
     }
 

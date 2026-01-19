@@ -102,6 +102,34 @@ cache.getFreeSpace(); // Free size in cache.
 cache.getJournalSize(); // Internal cache journal size in bytes.
 ```
 
+### Get records information
+To get detailed information about cached records including LRU order, use `getRecordsInfo()`.
+
+This returns a list of `RecordInfo` objects sorted by last access time (most recently accessed first).
+Records at the end of the list will be evicted first when cache overflows.
+
+```java
+List<RecordInfo> records = cache.getRecordsInfo();
+for (RecordInfo info : records) {
+    String key = info.getKey();           // Key used to store the file
+    String fileName = info.getFileName(); // Actual file name in cache
+    long size = info.getSize();           // File size in bytes
+    long lastAccessed = info.getLastAccessed(); // Timestamp of last access
+}
+```
+
+To get information about a specific record without updating its access time:
+
+```java
+RecordInfo info = cache.getRecordInfo("some-key");
+if (info != null) {
+    // Record exists
+}
+```
+
+**Note:** `getRecordInfo()` and `getRecordsInfo()` do not update the access time, 
+so they can be used for monitoring without affecting LRU order.
+
 ### Thread safety
 DiskLruCache is thread-safe. All public methods are synchronized and can be safely called from multiple threads.
 
