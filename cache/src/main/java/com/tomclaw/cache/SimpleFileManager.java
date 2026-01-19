@@ -34,12 +34,47 @@ public class SimpleFileManager implements FileManager {
     @Override
     public File accept(File extFile, String name) throws IOException {
         File newFile = get(name);
-        if ((dir.exists() || dir.mkdirs())
-                | (newFile.exists() && newFile.delete())
-                | extFile.renameTo(newFile)) {
-            return newFile;
-        } else {
-            throw formatException("Unable to accept file %s", extFile);
+
+        // Create cache directory if needed
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new IOException("Unable to create cache directory");
+        }
+
+        // Delete existing file if present
+        if (newFile.exists() && !newFile.delete()) {
+            throw formatException("Unable to delete existing file %s", newFile);
+        }
+
+        // Move file to cache
+        if (!extFile.renameTo(newFile)) {
+            // Fallback: copy file if rename fails (e.g., cross-filesystem)
+            copyFile(extFile, newFile);
+            if (!extFile.delete()) {
+                // Log but don't fail - file is already copied
+            }
+        }
+
+        return newFile;
+    }
+
+    private void copyFile(File source, File dest) throws IOException {
+        java.io.FileInputStream fis = null;
+        java.io.FileOutputStream fos = null;
+        try {
+            fis = new java.io.FileInputStream(source);
+            fos = new java.io.FileOutputStream(dest);
+            byte[] buffer = new byte[8192];
+            int length;
+            while ((length = fis.read(buffer)) > 0) {
+                fos.write(buffer, 0, length);
+            }
+        } finally {
+            if (fis != null) {
+                try { fis.close(); } catch (IOException ignored) {}
+            }
+            if (fos != null) {
+                try { fos.close(); } catch (IOException ignored) {}
+            }
         }
     }
 
