@@ -3,6 +3,7 @@ package com.tomclaw.cache;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
@@ -11,7 +12,7 @@ import java.util.Set;
 @SuppressWarnings({"unused", "WeakerAccess", "UnusedReturnValue"})
 public class DiskLruCache {
 
-    public static final Charset UTF_8 = Charset.forName("UTF-8");
+    public static final Charset UTF_8 = StandardCharsets.UTF_8;
     public static final String HASH_ALGORITHM = "MD5";
 
     private final Journal journal;
@@ -27,12 +28,27 @@ public class DiskLruCache {
     }
 
     public static DiskLruCache create(File cacheDir, long cacheSize) throws IOException {
+        if (cacheDir == null) {
+            throw new IllegalArgumentException("Cache directory must not be null");
+        }
+        if (cacheSize <= 0) {
+            throw new IllegalArgumentException("Cache size must be positive");
+        }
         FileManager fileManager = new SimpleFileManager(cacheDir);
         Logger logger = new SimpleLogger(false);
         return create(fileManager, logger, cacheSize);
     }
 
     public static DiskLruCache create(FileManager fileManager, Logger logger, long cacheSize) throws IOException {
+        if (fileManager == null) {
+            throw new IllegalArgumentException("FileManager must not be null");
+        }
+        if (logger == null) {
+            throw new IllegalArgumentException("Logger must not be null");
+        }
+        if (cacheSize <= 0) {
+            throw new IllegalArgumentException("Cache size must be positive");
+        }
         fileManager.prepare();
         Journal journal = Journal.readJournal(fileManager, logger);
         return new DiskLruCache(fileManager, journal, logger, cacheSize);
@@ -41,12 +57,17 @@ public class DiskLruCache {
     public File put(String key, File file) throws IOException {
         synchronized (journal) {
             assertKeyValid(key);
+            // Delete old file if exists to prevent file leaks when extension changes
+            Record oldRecord = journal.delete(key);
+            if (oldRecord != null) {
+                fileManager.delete(oldRecord.getName());
+            }
+
             String name = generateName(key, file);
             long time = System.currentTimeMillis();
             long fileSize = file.length();
             Record record = new Record(key, name, time, fileSize);
             File cacheFile = fileManager.accept(file, name);
-            journal.delete(key);
             journal.put(record, cacheSize);
             journal.writeJournal();
             return cacheFile;
