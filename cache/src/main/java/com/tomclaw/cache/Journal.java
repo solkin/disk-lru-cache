@@ -73,11 +73,15 @@ class Journal {
     }
 
     private void prepare(long fileSize, long cacheSize) throws IOException {
+        if (fileSize > cacheSize) {
+            throw new IOException(String.format(
+                    "File size %d bytes exceeds cache size %d bytes", fileSize, cacheSize));
+        }
         if (totalSize + fileSize > cacheSize) {
             logger.log("[!] File %d bytes is not fit in cache %d bytes", fileSize, totalSize);
             List<Record> records = new ArrayList<>(map.values());
             Collections.sort(records, new RecordComparator());
-            for (int c = records.size() - 1; c > 0; c--) {
+            for (int c = records.size() - 1; c >= 0; c--) {
                 Record record = records.remove(c);
                 long nextTotalSize = totalSize - record.getSize();
                 logger.log("[x] Delete %s [%d ms] %d bytes and free cache to %d bytes",
