@@ -20,8 +20,9 @@ allprojects {
 ```
 **Step 2.** Add the dependency
 ```groovy
-implementation 'com.github.solkin:disk-lru-cache:1.4'
+implementation 'com.github.solkin:disk-lru-cache:<version>'
 ```
+Replace `<version>` with the latest version from the JitPack badge above.
 
 ### Create DiskLruCache
 ```java
@@ -57,20 +58,26 @@ File file = cache.get(key);
 ### Delete file from cache
 To delete file from cache, just invoke `delete` method.
 
-Key is the same you put this file into cache
+Key is the same you put this file into cache.
 
 File will be deleted from cache and from journal.
 
+Throws `RecordNotFoundException` if the key is not found in cache.
+
 ```java
 String key = "some-key";
-cache.delete(key);
+try {
+    cache.delete(key);
+} catch (RecordNotFoundException e) {
+    // Key not found in cache
+}
 ```
 
 ### Clear cache
 Sometime you may need to clear whole cache and drop all stored files.
 
 ```java
-cache().clearCache();
+cache.clearCache();
 ```
 
 ### List keys in cache
@@ -95,11 +102,30 @@ cache.getFreeSpace(); // Free size in cache.
 cache.getJournalSize(); // Internal cache journal size in bytes.
 ```
 
+### Thread safety
+DiskLruCache is thread-safe. All public methods are synchronized and can be safely called from multiple threads.
+
+### Limitations
+- File size cannot exceed cache size. Attempting to put a larger file will throw `IOException`.
+- Key cannot be `null` or empty. Invalid keys will throw `IllegalArgumentException`.
+
+### Requirements
+- Min SDK: 16 (Android 4.1)
+- Target SDK: 34
+
+### Custom FileManager and Logger
+You can provide custom implementations of `FileManager` and `Logger`:
+
+```java
+FileManager fileManager = new MyCustomFileManager();
+Logger logger = new MyCustomLogger();
+DiskLruCache cache = DiskLruCache.create(fileManager, logger, CACHE_SIZE);
+```
 
 ### License
     MIT License
     
-    Copyright (c) 2022 Igor Solkin
+    Copyright (c) 2022-2026 Igor Solkin
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
