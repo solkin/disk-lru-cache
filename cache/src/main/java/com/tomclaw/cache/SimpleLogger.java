@@ -4,7 +4,7 @@ public class SimpleLogger implements Logger {
 
     private final boolean isLoggingEnabled;
 
-    public SimpleLogger(Boolean isLoggingEnabled) {
+    public SimpleLogger(boolean isLoggingEnabled) {
         this.isLoggingEnabled = isLoggingEnabled;
     }
 
